@@ -356,7 +356,7 @@
                 return this.uniqueCart.reduce((total, item) => total + item.quantity, 0);
             },
             validateName(name) {
-                const namePattern = /^[A-Za-z\s]+$/;
+                const namePattern = /^[A-Za-z]+$/;
                 return namePattern.test(name);
             },
             validatePhone(phone) {
