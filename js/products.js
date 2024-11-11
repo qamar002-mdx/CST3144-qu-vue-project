@@ -7,7 +7,7 @@ let products = [
         image: 'images/math.jpg',
         location: "London",
         rating: 4,
-        availableInventory: 10
+        availableInventory: 10 
     },
     {
         id: 1002,
