@@ -5,7 +5,7 @@ let products = [
         description: 'The study of numbers, shapes, and patterns, focusing on problem-solving and logical reasoning.',
         price: '99',
         image: 'images/math.jpg',
-        location: "London",
+        location: "London", 
         rating: 4,
         availableInventory: 10 
     },
