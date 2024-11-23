@@ -265,7 +265,7 @@
             }
         },
         created() {
-            fetch("http://myonlineshop.eu-west-2.elasticbeanstalk.com//products")  // backend se products fetch karo
+            fetch("http://myonlineshop.eu-west-2.elasticbeanstalk.com/products")  // backend se products fetch karo
                 .then(response => response.json())  // response ko JSON mein convert karo
                 .then(data => {
                     this.products = data;  // products array ko update karo
@@ -392,7 +392,7 @@
             //     }
             // }
             searchProducts() {
-                fetch(`http://myonlineshop.eu-west-2.elasticbeanstalk.com//search?q=${this.searchQuery}`)
+                fetch(`http://myonlineshop.eu-west-2.elasticbeanstalk.com/search?q=${this.searchQuery}`)
                     .then(response => response.json())
                     .then(data => {
                         this.filteredProducts = data; // Store search results
@@ -407,7 +407,7 @@
                     quantities: this.cart.map(item => item.quantity),
                 };
 
-                fetch("http://myonlineshop.eu-west-2.elasticbeanstalk.com//orders", {
+                fetch("http://myonlineshop.eu-west-2.elasticbeanstalk.com/orders", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",  // JSON format mein data bhejo
@@ -425,7 +425,7 @@
             updateProductInventory(productId, orderedQuantity) {
                 const updatedData = { availableInventory: -orderedQuantity };  // inventory ko decrease karo
 
-                fetch(`http://myonlineshop.eu-west-2.elasticbeanstalk.com//products/${productId}`, {
+                fetch(`http://myonlineshop.eu-west-2.elasticbeanstalk.com/products/${productId}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",  // JSON format mein data bhejo
