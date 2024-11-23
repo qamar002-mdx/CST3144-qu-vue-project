@@ -47,7 +47,7 @@
                             <div class="row">
                                 <h4 class="card-title mb-3">Find Your Course</h4>
                                 <div class="form-outline mb-4" data-mdb-input-init>
-                                    <input type="search" id="form1" class="form-control" placeholder="Search" aria-label="Search" />
+                                    <input type="search" id="form1" class="form-control" v-model="searchQuery" @input="searchProducts" placeholder="Search" aria-label="Search" />
                                 </div>
                                 <div class="col-md-6">
                                     <label for="sortAttribute" class="form-label"><strong>Sort by:</strong></label>
@@ -240,7 +240,10 @@
         el: '#app',
         data: {
             showProduct: true,
-            products: products,  // Assume the products are already defined in the 'products.js' file
+            searchQuery: "",
+            filteredProducts: [],
+            // products: products,
+            products: [],
             cart: [],
             order: {
                 fullName: "",
@@ -261,6 +264,14 @@
                 NV: "Nevada"
             }
         },
+        created() {
+            fetch("http://localhost:3000/products")  // backend se products fetch karo
+                .then(response => response.json())  // response ko JSON mein convert karo
+                .then(data => {
+                    this.products = data;  // products array ko update karo
+                })
+                .catch(error => console.error("Error fetching products:", error));  // error handle karo
+        },
         computed: {
             uniqueCart() {
                 return this.cart.reduce((acc, item) => {
@@ -274,15 +285,21 @@
                 }, []);
             },
             sortedProducts() {
-                return this.products.slice().sort((a, b) => {
+                const sourceArray = this.searchQuery ? this.filteredProducts : this.products;
+                return sourceArray.slice().sort((a, b) => {
                     let comparison = 0;
+
+                    // Numeric sorting for price or inventory
                     if (this.sortAttribute === 'price' || this.sortAttribute === 'availableInventory') {
                         comparison = a[this.sortAttribute] - b[this.sortAttribute];
                     } else {
+                        // String sorting for other attributes
                         const aValue = a[this.sortAttribute].toString().toLowerCase();
                         const bValue = b[this.sortAttribute].toString().toLowerCase();
                         comparison = aValue.localeCompare(bValue);
                     }
+
+                    // Ascending or Descending
                     return this.sortOrder === 'asc' ? comparison : -comparison;
                 });
             },
@@ -367,13 +384,62 @@
                 this.fullNameValid = this.validateName(this.order.fullName);
                 this.phoneNumberValid = this.validatePhone(this.order.phoneNumber);
             },
+            // submitForm() {
+            //     if (this.isFormValid && this.cartItemCount > 0) {
+            //         alert("Your order has been placed successfully!");
+            //     } else {
+            //         alert("Please provide valid information and add items to your cart.");
+            //     }
+            // }
+            searchProducts() {
+                fetch(`http://localhost:3000/search?q=${this.searchQuery}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.filteredProducts = data; // Store search results
+                    })
+                    .catch(error => console.error("Error searching products:", error));
+            },
             submitForm() {
-                if (this.isFormValid && this.cartItemCount > 0) {
-                    alert("Your order has been placed successfully!");
-                } else {
-                    alert("Please provide valid information and add items to your cart.");
-                }
+                const order = {
+                    name: this.order.fullName,
+                    phone: this.order.phoneNumber,
+                    productIDs: this.cart.map(item => item.id),
+                    quantities: this.cart.map(item => item.quantity),
+                };
+
+                fetch("http://localhost:3000/orders", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",  // JSON format mein data bhejo
+                    },
+                    body: JSON.stringify(order),  // order ko stringify karke bhejo
+                })
+                    .then(response => response.json())  // backend se response lo
+                    .then(data => {
+                        alert("Order placed successfully!");  // Order confirm karo
+                        this.cart = [];  // Cart ko clear karo
+                        this.showCheckout();  // Checkout page pe wapas jao
+                    })
+                    .catch(error => console.error("Error placing order:", error));  // error handle karo
+            },
+            updateProductInventory(productId, orderedQuantity) {
+                const updatedData = { availableInventory: -orderedQuantity };  // inventory ko decrease karo
+
+                fetch(`http://localhost:3000/products/${productId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",  // JSON format mein data bhejo
+                    },
+                    body: JSON.stringify(updatedData),  // data ko stringify karke bhejo
+                })
+                    .then(response => response.json())  // response ko handle karo
+                    .then(data => {
+                        console.log("Inventory updated successfully:", data);
+                    })
+                    .catch(error => console.error("Error updating inventory:", error));  // error handle karo
             }
+
+
         }
     });
 
