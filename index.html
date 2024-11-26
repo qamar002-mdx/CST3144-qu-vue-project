@@ -72,8 +72,8 @@
                         <div class="col-9">
                             <div class="row">
                                 <h4 class="card-title mb-3">All Products</h4>
-                                 <!-- Loop v-for Start-->
-                                 <div class="col-4 mb-4" v-for="product in sortedProducts" :key="product.id">
+                                <!-- Loop v-for Start-->
+                                <div class="col-4 mb-4" v-for="product in sortedProducts" :key="product.id">
                                     <div class="card mb-30">
                                         <img :src="product.image" alt="img" class="img-fluid" style="object-fit: cover; width: 100%; height: 200px;">
                                         <div class="card-body text-center">
@@ -438,8 +438,6 @@
                     })
                     .catch(error => console.error("Error updating inventory:", error));  // error handle karo
             }
-
-
         }
     });
 
